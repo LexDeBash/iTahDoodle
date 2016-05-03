@@ -14,10 +14,6 @@ NSString *docPath() {
     return [[pathList objectAtIndex:0] stringByAppendingPathComponent:@"data.td"];
 }
 
-@interface AppDelegate ()
-
-@end
-
 @implementation AppDelegate
 
 #pragma mark - Application delegate callbacks
@@ -29,18 +25,10 @@ NSString *docPath() {
     NSArray *plist = [NSArray arrayWithContentsOfFile:docPath()];
     if (plist) {
         // Если набор данных существует, он коприруется в переменную экземпляра.
-        tasks = [plist mutableCopy];
+        self.tasks = [plist mutableCopy];
     } else {
         // В противном случае просто создаем пустой исходный набор.
-        tasks = [[NSMutableArray alloc] init];
-    }
-    
-    // Массив tasks пуст?
-    if ([tasks count] == 0) {
-        // Put some sstrings in it
-        [tasks addObject:@"Wolk the dog"];
-        [tasks addObject:@"Feed the hogs"];
-        [tasks addObject:@"Chop the logs"];
+        self.tasks = [NSMutableArray array];
     }
     
     // Создание и настройка экзмемпляра UIWindow
@@ -53,45 +41,50 @@ NSString *docPath() {
     
     // Определение граничных прямоуголников для трех элементов пользовательского интерфейса.
     // CGRectMake() создает экземпляр CGRect по данным (x, y, width, height)
-    CGRect tableFrame = CGRectMake(0, 80, 320, 380);
+    CGRect tableFrame = CGRectMake(0, 80, windowFrame.size.width, windowFrame.size.height-100);
     CGRect fieldFrame = CGRectMake(20, 40, 200, 31);
     CGRect buttonFrame = CGRectMake(228, 40, 72, 31);
     
     // Создание и настройка табличного представления
-    taskTable = [[UITableView alloc] initWithFrame:tableFrame
+    self.taskTable = [[UITableView alloc] initWithFrame:tableFrame
                                              style:UITableViewStylePlain];
-    [taskTable setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+    self.taskTable.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     // Назначение текущего объетка источником данных табличного представления
-    [taskTable setDataSource:self];
+    self.taskTable.dataSource = self;
+    
+    // Tell the tableview which class to instantiate whenever it needs to create a new cell
+    [self.taskTable registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
     
     // Создание и настройка текстовго поля для создания новых задач
-    taskField = [[UITextField alloc] initWithFrame:fieldFrame];
-    [taskField setBorderStyle:UITextBorderStyleRoundedRect];
-    [taskField setPlaceholder:@"Type a task, tap Insert"];
+    self.taskField = [[UITextField alloc] initWithFrame:fieldFrame];
+    self.taskField.borderStyle = UITextBorderStyleRoundedRect;
+    self.taskField.placeholder = @"Type a task, tap insert";
+    
+    // Для запуска клавиатуры
+    [self.taskField becomeFirstResponder];
     
     //Создание и настройка кнопки Insert в виде прямоуголника с закругленными углами
-    insertButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [insertButton setFrame:buttonFrame];
-    
-    // Работа кнопок снована на механзие обратного вызова типа "приемник/действие". Действие кнопки Insert настраивается на вызов метода -addTask: текущего объекта
-    [insertButton addTarget:self
-                     action:@selector(addTask:)
-           forControlEvents:UIControlEventTouchUpInside];
+    self.insertButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    self.insertButton.frame = buttonFrame;
     
     // Опеределение надписи на кнопке
-    [insertButton setTitle:@"Insert"
+    [self.insertButton setTitle:@"Insert"
                   forState:UIControlStateNormal];
     
+    // Работа кнопок снована на механзие обратного вызова типа "приемник/действие". Действие кнопки Insert настраивается на вызов метода -addTask: текущего объекта
+    [self.insertButton addTarget:self
+                          action:@selector(addTask:)
+                forControlEvents:UIControlEventTouchUpInside];
+    
     //Включение трех элементов пользовательского интерфейса в окно
-    [[self window] addSubview:taskTable];
-    [[self window] addSubview:taskField];
-    [[self window] addSubview:insertButton];
+    [self.window addSubview:self.taskTable];
+    [self.window addSubview:self.taskField];
+    [self.window addSubview:self.insertButton];
     
     // Заверешение настройки окна и отображение его на экране
-    [[self window] setBackgroundColor:[UIColor whiteColor]];
-    [[self window] makeKeyAndVisible];
-
+    self.window.backgroundColor = [UIColor whiteColor];
+    [self.window makeKeyAndVisible];
     return YES;
 }
 
@@ -123,43 +116,44 @@ NSString *docPath() {
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section {
     // Так как данное табличное представление содержит только одну секцию, колчиство строк в ней равно количесту элементов массива tasks
-    return [tasks count];
+    return [self.tasks count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     // Для улучшения быстродействия мы заново используем ячейки, вышедшие за пределы экрана, и возвращаем их с новым содержимым вместо того, чтобы всегда создавть новые ячейки. Сначала мы проверяем, имеется ли ячейка, досупная для повторного использования.
-    UITableViewCell *c = [taskTable dequeueReusableCellWithIdentifier:@"Cell"];
+    UITableViewCell *cell = [self.taskTable dequeueReusableCellWithIdentifier:@"Cell"];
     
-    if (!c) {
-        // ... и создаем новую ячейку только в том случае, если доступных ячеек нет.
-        c = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                   reuseIdentifier:@"Cell"];
-    }
+    // (Re)Configure the cell based on the model object (tasks array)
+    NSString *item = [self.tasks objectAtIndex:indexPath.row];
+    cell.textLabel.text = item;
     
-    // Затем ячейка настраивется в соответствии с информацией объекта модели (в нашем случае это массив todoItems)
-    NSString *item = [tasks objectAtIndex:[indexPath row]];
-    [[c textLabel] setText:item];
-    
-    return c;
+    return cell;
 }
 
+#pragma mark - Actions
+
 - (void)addTask:(id)sender {
+    
     // Получение задачи
-    NSString *t = [taskField text];
+    NSString *text = [self.taskField text];
+    
     // Выход, если поле taskField пусто
-    if ([t isEqualToString:@""]) {
+    if ([text length] == 0) {
         return;
     }
     
     // Включение задачи в рабочий массив
-    [tasks addObject:t];
+    [self.tasks addObject:text];
+    
     // Обновление таблицы, чтобы в ней отображался новый элемент
-    [taskTable reloadData];
+    [self.taskTable reloadData];
+    
     //Очистка текстового поля
-    [taskField setText:@""];
+    [self.taskField setText:@""];
+    
     // Клавиатура убирается с экрана
-    [taskField resignFirstResponder];
+    [self.taskField resignFirstResponder];
 }
 
 @end

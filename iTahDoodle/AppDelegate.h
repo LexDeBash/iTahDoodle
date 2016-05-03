@@ -13,17 +13,14 @@ NSString *docPath(void);
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UITableViewDataSource>
 
-{
-    UITableView *taskTable;
-    UITextField *taskField;
-    UIButton *insertButton;
-    NSMutableArray *tasks;
-}
+@property (strong, nonatomic) UIWindow *window;
+@property (nonatomic) UITableView *taskTable;
+@property (nonatomic) UITextField *taskField;
+@property (nonatomic) UIButton *insertButton;
+
+@property (nonatomic) NSMutableArray *tasks;
 
 - (void)addTask: (id)sender;
-
-@property (strong, nonatomic) UIWindow *window;
-
 
 @end
 
