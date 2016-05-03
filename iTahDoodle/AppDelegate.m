@@ -35,6 +35,14 @@ NSString *docPath() {
         tasks = [[NSMutableArray alloc] init];
     }
     
+    // Массив tasks пуст?
+    if ([tasks count] == 0) {
+        // Put some sstrings in it
+        [tasks addObject:@"Wolk the dog"];
+        [tasks addObject:@"Feed the hogs"];
+        [tasks addObject:@"Chop the logs"];
+    }
+    
     // Создание и настройка экзмемпляра UIWindow
     // Структура CGRect представляет прямоуголник с базовой точкой (x, y) и размерами (width, height)
     CGRect windowFrame = [[UIScreen mainScreen] bounds];
