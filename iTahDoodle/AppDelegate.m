@@ -144,4 +144,22 @@ NSString *docPath() {
     return c;
 }
 
+- (void)addTask:(id)sender {
+    // Получение задачи
+    NSString *t = [taskField text];
+    // Выход, если поле taskField пусто
+    if ([t isEqualToString:@""]) {
+        return;
+    }
+    
+    // Включение задачи в рабочий массив
+    [tasks addObject:t];
+    // Обновление таблицы, чтобы в ней отображался новый элемент
+    [taskTable reloadData];
+    //Очистка текстового поля
+    [taskField setText:@""];
+    // Клавиатура убирается с экрана
+    [taskField resignFirstResponder];
+}
+
 @end
