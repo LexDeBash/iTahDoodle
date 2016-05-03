@@ -39,7 +39,9 @@ NSString *docPath() {
     // Структура CGRect представляет прямоуголник с базовой точкой (x, y) и размерами (width, height)
     CGRect windowFrame = [[UIScreen mainScreen] bounds];
     UIWindow *theWindow = [[UIWindow alloc] initWithFrame:windowFrame];
-    [self setWindow:theWindow];
+    UIViewController *vc = [[UIViewController alloc]initWithNibName:nil bundle:nil];
+    theWindow.rootViewController = vc;
+    self.window = theWindow;
     
     // Определение граничных прямоуголников для трех элементов пользовательского интерфейса.
     // CGRectMake() создает экземпляр CGRect по данным (x, y, width, height)
