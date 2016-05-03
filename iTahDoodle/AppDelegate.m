@@ -20,7 +20,7 @@ NSString *docPath() {
 
 @implementation AppDelegate
 
-#pragma mark - Aplication delegate callbacks
+#pragma mark - Application delegate callbacks
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
