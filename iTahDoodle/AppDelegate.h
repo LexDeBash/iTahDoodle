@@ -11,7 +11,7 @@
 // Объявление вспомогательной функции для получения пути к каталогу на диске, который будет использоваться для сохранения списка задач
 NSString *docPath(void);
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, UITableViewDataSource>
 
 {
     UITableView *taskTable;

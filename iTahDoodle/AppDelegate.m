@@ -54,6 +54,9 @@ NSString *docPath() {
                                              style:UITableViewStylePlain];
     [taskTable setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     
+    // Назначение текущего объетка источником данных табличного представления
+    [taskTable setDataSource:self];
+    
     // Создание и настройка текстовго поля для создания новых задач
     taskField = [[UITextField alloc] initWithFrame:fieldFrame];
     [taskField setBorderStyle:UITextBorderStyleRoundedRect];
@@ -104,6 +107,33 @@ NSString *docPath() {
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+
+#pragma mark - Table View management
+
+- (NSInteger)tableView:(UITableView *)tableView
+ numberOfRowsInSection:(NSInteger)section {
+    // Так как данное табличное представление содержит только одну секцию, колчиство строк в ней равно количесту элементов массива tasks
+    return [tasks count];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Для улучшения быстродействия мы заново используем ячейки, вышедшие за пределы экрана, и возвращаем их с новым содержимым вместо того, чтобы всегда создавть новые ячейки. Сначала мы проверяем, имеется ли ячейка, досупная для повторного использования.
+    UITableViewCell *c = [taskTable dequeueReusableCellWithIdentifier:@"Cell"];
+    
+    if (!c) {
+        // ... и создаем новую ячейку только в том случае, если доступных ячеек нет.
+        c = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                   reuseIdentifier:@"Cell"];
+    }
+    
+    // Затем ячейка настраивется в соответствии с информацией объекта модели (в нашем случае это массив todoItems)
+    NSString *item = [tasks objectAtIndex:[indexPath row]];
+    [[c textLabel] setText:item];
+    
+    return c;
 }
 
 @end
