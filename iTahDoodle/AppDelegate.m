@@ -34,6 +34,50 @@ NSString *docPath() {
         // В противном случае просто создаем пустой исходный набор.
         tasks = [[NSMutableArray alloc] init];
     }
+    
+    // Создание и настройка экзмемпляра UIWindow
+    // Структура CGRect представляет прямоуголник с базовой точкой (x, y) и размерами (width, height)
+    CGRect windowFrame = [[UIScreen mainScreen] bounds];
+    UIWindow *theWindow = [[UIWindow alloc] initWithFrame:windowFrame];
+    [self setWindow:theWindow];
+    
+    // Определение граничных прямоуголников для трех элементов пользовательского интерфейса.
+    // CGRectMake() создает экземпляр CGRect по данным (x, y, width, height)
+    CGRect tableFrame = CGRectMake(0, 80, 320, 380);
+    CGRect fieldFrame = CGRectMake(20, 40, 200, 31);
+    CGRect buttonFrame = CGRectMake(228, 40, 72, 31);
+    
+    // Создание и настройка табличного представления
+    taskTable = [[UITableView alloc] initWithFrame:tableFrame
+                                             style:UITableViewStylePlain];
+    [taskTable setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+    
+    // Создание и настройка текстовго поля для создания новых задач
+    taskField = [[UITextField alloc] initWithFrame:fieldFrame];
+    [taskField setBorderStyle:UITextBorderStyleRoundedRect];
+    [taskField setPlaceholder:@"Type a task, tap Insert"];
+    
+    //Создание и настройка кнопки Insert в виде прямоуголника с закругленными углами
+    insertButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [insertButton setFrame:buttonFrame];
+    
+    // Работа кнопок снована на механзие обратного вызова типа "приемник/действие". Действие кнопки Insert настраивается на вызов метода -addTask: текущего объекта
+    [insertButton addTarget:self
+                     action:@selector(addTask:)
+           forControlEvents:UIControlEventTouchUpInside];
+    
+    // Опеределение надписи на кнопке
+    [insertButton setTitle:@"Insert"
+                  forState:UIControlStateNormal];
+    
+    //Включение трех элементов пользовательского интерфейса в окно
+    [[self window] addSubview:taskTable];
+    [[self window] addSubview:taskField];
+    [[self window] addSubview:insertButton];
+    
+    // Заверешение настройки окна и отображение его на экране
+    [[self window] setBackgroundColor:[UIColor whiteColor]];
+    [[self window] makeKeyAndVisible];
 
     return YES;
 }
