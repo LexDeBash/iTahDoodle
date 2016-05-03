@@ -8,15 +8,33 @@
 
 #import "AppDelegate.h"
 
+// Вспомогательная функция для получения пути к списку задач, хранящемуся на диске
+NSString *docPath() {
+    NSArray *pathList = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    return [[pathList objectAtIndex:0] stringByAppendingPathComponent:@"data.td"];
+}
+
 @interface AppDelegate ()
 
 @end
 
 @implementation AppDelegate
 
+#pragma mark - Aplication delegate callbacks
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    // Попытка загрузки существующего списка задач из массива, хранящегося на диске.
+    NSArray *plist = [NSArray arrayWithContentsOfFile:docPath()];
+    if (plist) {
+        // Если набор данных существует, он коприруется в переменную экземпляра.
+        tasks = [plist mutableCopy];
+    } else {
+        // В противном случае просто создаем пустой исходный набор.
+        tasks = [[NSMutableArray alloc] init];
+    }
+
     return YES;
 }
 
