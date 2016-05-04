@@ -33,15 +33,15 @@ NSString *docPath() {
     
     // Создание и настройка экзмемпляра UIWindow
     // Структура CGRect представляет прямоуголник с базовой точкой (x, y) и размерами (width, height)
-    CGRect windowFrame = [[UIScreen mainScreen] bounds];
-    UIWindow *theWindow = [[UIWindow alloc] initWithFrame:windowFrame];
-    UIViewController *vc = [[UIViewController alloc]initWithNibName:nil bundle:nil];
-    theWindow.rootViewController = vc;
+    CGRect winFrame = [[UIScreen mainScreen] bounds];
+    UIWindow *theWindow = [[UIWindow alloc] initWithFrame:winFrame];
     self.window = theWindow;
+    self.window.rootViewController = [[UIViewController alloc] init];
+
     
     // Определение граничных прямоуголников для трех элементов пользовательского интерфейса.
     // CGRectMake() создает экземпляр CGRect по данным (x, y, width, height)
-    CGRect tableFrame = CGRectMake(0, 80, windowFrame.size.width, windowFrame.size.height-100);
+    CGRect tableFrame = CGRectMake(0, 80, winFrame.size.width, winFrame.size.height-100);
     CGRect fieldFrame = CGRectMake(20, 40, 200, 31);
     CGRect buttonFrame = CGRectMake(228, 40, 72, 31);
     
@@ -78,9 +78,10 @@ NSString *docPath() {
                 forControlEvents:UIControlEventTouchUpInside];
     
     //Включение трех элементов пользовательского интерфейса в окно
-    [self.window addSubview:self.taskTable];
-    [self.window addSubview:self.taskField];
-    [self.window addSubview:self.insertButton];
+    [self.window.rootViewController.view addSubview:self.insertButton];
+    
+    [self.window.rootViewController.view addSubview:self.taskTable];
+    [self.window.rootViewController.view addSubview:self.taskField];
     
     // Заверешение настройки окна и отображение его на экране
     self.window.backgroundColor = [UIColor whiteColor];
